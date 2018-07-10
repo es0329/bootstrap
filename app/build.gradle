@@ -1,0 +1,152 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-noarg'
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.es0329.locale"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "0.0.1"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'BREWERY_DB_API_KEY', keystoreProperties['BreweryDbApiKey']
+    }
+
+    buildTypes {
+        release {
+            postprocessing {
+                removeUnusedCode false
+                removeUnusedResources false
+                obfuscate false
+                optimizeCode false
+                proguardFile 'proguard-rules.pro'
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    defaultConfig {
+        multiDexEnabled true
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+kapt {
+    mapDiagnosticLocations = true
+}
+
+noArg {
+    annotation("@com.es0329.locale.data.source.db.DefaultConstructor")
+}
+androidExtensions {
+    experimental = true
+}
+
+configurations.all { resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2' }
+
+dependencies {
+    ext {
+        supportLibraryVersion = '1.0.0-beta01'
+        playServicesVersion = '15.0.1'
+        retrofitVersion = '2.3.0'
+        stethoVersion = '1.5.0'
+        chuckVersion = '1.1.0'
+        moshiVersion = '1.5.0'
+        daggerVersion = '2.16'
+        roomVersion = '2.0.0-beta01'
+        lifecyclesVersion = '2.0.0-beta01'
+        liveDataVersion = '2.0.0-beta01'
+        glideVersion = '4.8.0-SNAPSHOT'
+    }
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.0.0-beta01'
+
+    // Support Library
+    implementation "com.google.android.material:material:$supportLibraryVersion"
+    implementation "androidx.legacy:legacy-support-v4:$supportLibraryVersion"
+    implementation "androidx.appcompat:appcompat:$supportLibraryVersion"
+    implementation "androidx.palette:palette:$supportLibraryVersion"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
+
+    // Testing
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha3'
+
+    // Play Services
+    implementation "com.google.android.gms:play-services-maps:$playServicesVersion"
+    implementation "com.google.android.gms:play-services-location:$playServicesVersion"
+
+    // Networking
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:1.0.0'
+
+    // Network monitor
+    implementation "com.facebook.stetho:stetho:$stethoVersion"
+    implementation "com.facebook.stetho:stetho-okhttp3:$stethoVersion"
+    debugImplementation "com.readystatesoftware.chuck:library:$chuckVersion"
+    releaseImplementation "com.readystatesoftware.chuck:library-no-op:$chuckVersion"
+    implementation 'com.squareup.okhttp3:logging-interceptor:'
+
+    // Logging
+    implementation 'com.jakewharton.timber:timber:4.7.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+
+    // Parsing
+    implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    implementation "com.squareup.moshi:moshi-adapters:$moshiVersion"
+
+    // Dependency injection
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+
+    // Architecture
+    implementation "androidx.room:room-runtime:$roomVersion"
+    implementation "androidx.room:room-rxjava2:$roomVersion"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    testImplementation "androidx.room:room-testing:$roomVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecyclesVersion"
+    kapt 'androidx.lifecycle:lifecycle-common-java8:2.0.0-beta01'
+    implementation "androidx.lifecycle:lifecycle-livedata:$liveDataVersion"
+    implementation "androidx.lifecycle:lifecycle-reactivestreams:$liveDataVersion"
+    testImplementation "androidx.arch.core:core-testing:$liveDataVersion"
+
+    // Reactive
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+
+    // Image loading
+    implementation 'com.github.florent37:glidepalette:2.1.2'
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    kapt "com.github.bumptech.glide:compiler:$glideVersion"
+    implementation 'com.google.firebase:firebase-firestore:17.0.2'
+}
